@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Calendar</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20231019/pngtree-new-year-s-banner-christmas-vibes-with-a-tropical-paradise-ocean-image_13669579.png'); /* 원하는 배경 이미지 URL */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .calendar {
+            width: 70%;
+            margin: 20px auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+        }
+
+        .calendar-header {
+            background-color: #007bff;
+            color: #fff;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .calendar-days div {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .day-names {
+            background: #eee;
+            font-weight: bold;
+        }
+
+        .days div:hover {
+            background: #e0e0e0;
+            cursor: pointer;
+        }
+
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="p-3 bg-primary text-white text-center" style="background-color: rgba(0, 123, 255, 0.3) !important;">
+        <h1>My Calendar</h1>
+    </header>
+
+    <div class="container">
+        <div class="calendar border">
+            <div class="calendar-header p-3 text-center">
+                <h2 class="m-0">{{ data.year }}년 {{ data.month }}월</h2>
+            </div>
+            <div class="calendar-days border-top">
+                <div class="day-names border-right border-bottom">일</div>
+                <div class="day-names border-right border-bottom">월</div>
+                <div class="day-names border-right border-bottom">화</div>
+                <div class="day-names border-right border-bottom">수</div>
+                <div class="day-names border-right border-bottom">목</div>
+                <div class="day-names border-right border-bottom">금</div>
+                <div class="day-names border-right border-bottom">토</div>
+                {% for i in range(data.weekday+1) %}
+                <div class="days border-right border-bottom"></div>
+                {% endfor %}
+
+                {% for day in range(1, 31) %}
+                <div class="days border-right border-bottom">
+                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        data-day="{{ day }}">
+                        {{ day }}
+                    </button>
+                </div>
+                {% endfor %}
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">{{ data.year }}년 {{ data.month }}월
+                                    <span id="modal-day"></span>일
+                                </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ url_for('work_create') }}" method="get">
+                                    <input type="hidden" name="date" id="eventDate">
+                                    <div class="mb-3">
+                                        <label for="exampleInputEmail1" class="form-label">일정을 입력해주세요.</label>
+                                        <textarea class="form-control" id="eventInput" name="event" rows="3"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="exampleInputPassword1" class="form-label">앨범 커버URL</label>
+                                        <input type="text" class="form-control" id="image_url" name="image_url">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">등록</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-4 g-4 w-150 pb-5">
+            {% for list in work %}
+            <div class="col">
+                <div class="card h-100">
+                    <img src="{{ list.image_url }}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ list.work_day }}일</h5>
+                        <p class="card-text">{{ list.work }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 My Calendar. All rights reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        var exampleModal = document.getElementById('exampleModal')
+        exampleModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget
+            var day = button.getAttribute('data-day')
+            var modalTitle = exampleModal.querySelector('#modal-day')
+            modalTitle.textContent = day
+            document.getElementById('eventDate').value = day
+        })
+    </script>
+</body>
+
+</html>
